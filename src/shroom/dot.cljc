@@ -264,8 +264,9 @@
          (concat
           
           ;; nodes
-          (if subsequent-pass? (nodesfn root-cluster) (nodesfn nil))
           "\n"
+          (interpose "\n" (if subsequent-pass? (nodesfn root-cluster) (nodesfn nil)))
+          
 
           ;; ranks
           (->> ranks

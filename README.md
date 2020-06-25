@@ -5,7 +5,7 @@ Clojure/script library to produce Graphviz dot format
 
 ## Usage
 
-`[shroom "0.1.1"]`
+`[shroom "0.1.2"]`
 
 A bit of a reworking of Zac Tellman's Rhizome library with the following changes:
 
