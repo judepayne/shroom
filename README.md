@@ -29,7 +29,7 @@ These can be followed by zero or more of the following keyword arguments:
 | `:edge->descriptor` | takes the source and destination node, and returns a map of attributes onto values describing how the edge should be rendered |
 | `:options` | a map of attributes onto values describing how the graph should be rendered |
 | `:node->cluster` | takes a node and returns which cluster, if any, the node belongs to |
-| `root-cluster` | the root cluster (clusters must be arranged as a tree) |
+| `:root-cluster` | the root cluster (clusters must be arranged as a tree) |
 | `:cluster->children` | takes a cluster and a seq of child (contained) clusters |
 | `:cluster->descriptor` | takes a cluster and returns a map of attributes onto values describing how the cluster should be rendered |
 | `:cluster->ranks` | takes a cluster and returns a seq of seqs of nodes, the nodes in each inner seq will be assinged `rank=same` |
