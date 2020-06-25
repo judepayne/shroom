@@ -5,7 +5,7 @@ Clojure/script library to produce Graphviz dot format
 
 ## Usage
 
-`[shroom "0.1.0"]`
+`[shroom "0.1.1"]`
 
 A bit of a reworking of Zac Tellman's Rhizome library with the following changes:
 
@@ -13,7 +13,8 @@ A bit of a reworking of Zac Tellman's Rhizome library with the following changes
 - Only produces dot output. Feeding that into graphviz is up to you.
 - no tree->dot function.
 - supports nested clusters.
-- tweaked interface.
+- supports setting `rank=same` for fine control of layout in Graphviz' dot algorithm.
+- tweaked interface to the main function.
 
 
 The principle function is `graph->dot` which (like Rhizome) takes two parameters: `nodes` (a list of nodes in the graph) and `adjacent` (which is a function that takes a node and returns adjacent nodes).
@@ -31,6 +32,7 @@ These can be followed by zero or more of the following keyword arguments:
 | `root-cluster` | the root cluster (clusters must be arranged as a tree) |
 | `:cluster->children` | takes a cluster and a seq of child (contained) clusters |
 | `:cluster->descriptor` | takes a cluster and returns a map of attributes onto values describing how the cluster should be rendered |
+| `:cluster->ranks` | takes a cluster and returns a seq of seqs of nodes, the nodes in each inner seq will be assinged `rank=same` |
 
 
 Enjoy!

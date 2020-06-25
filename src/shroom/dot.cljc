@@ -174,8 +174,9 @@
              edge->descriptor
              root-cluster
              cluster->children
-             node->cluster  ;; changed from ->cluster to ->cluster*s*
-             cluster->descriptor]
+             node->cluster
+             cluster->descriptor
+             cluster->ranks]
       :or {directed? true
            vertical? true
            node->descriptor (constantly nil)
@@ -183,7 +184,8 @@
            root-cluster nil
            cluster->children (constantly nil)
            node->cluster (constantly nil)
-           cluster->descriptor (constantly nil)}
+           cluster->descriptor (constantly nil)
+           cluster->ranks (constantly nil)}
       :as graph-descriptor}]
 
   (binding [*node->id* (or *node->id* (memoize (fn [_] (gensym "node"))))
@@ -193,7 +195,8 @@
                        clstrs
                        (set (tree-seq cluster->children cluster->children root-cluster))))
           node? (set nodes)
-          subsequent-pass? (::subsequent-pass? graph-descriptor)]
+          subsequent-pass? (::subsequent-pass? graph-descriptor)
+          ranks (cluster->ranks root-cluster)]
       (letfn [(nodesfn [clstr]
                 (->> nodes
                      (remove #(not= clstr (node->cluster %)))
@@ -263,6 +266,13 @@
           ;; nodes
           (if subsequent-pass? (nodesfn root-cluster) (nodesfn nil))
           "\n"
+
+          ;; ranks
+          (->> ranks
+               (map
+                (fn [r]
+                  (format-rank
+                   (mapv *node->id* r)))))
 
           ;; clusters
           (if-not subsequent-pass?
