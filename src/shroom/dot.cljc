@@ -152,12 +152,6 @@
    (dissoc (group-by f nodes) nil)))
 
 
-(defmacro dbg [body]
-  `(let [x# ~body]
-     (println "dbg:" '~body "=" x#)
-     x#))
-
-
 (defn tree-nodes [root children]
   (tree-seq children children root))
 
@@ -224,7 +218,7 @@
         (apply
          str
          (if subsequent-pass?
-           (str "\nsubgraph " (cluster->id root-cluster))
+           (str "subgraph " (cluster->id root-cluster))
            (if directed?
              "digraph"
              "graph"))
@@ -276,50 +270,51 @@
                    (mapv *node->id* r)))))
 
           ;; clusters
-          (if-not subsequent-pass?
-            (subgraph root-cluster)
-            (clusterfn root-cluster))
+          (when root-cluster
+            (if-not subsequent-pass?
+              (subgraph root-cluster)
+              (clusterfn root-cluster)))
 
           ;; edges
-          (when-not subsequent-pass? "\n")
+          ;(when-not subsequent-pass? "\n")
           (when-not subsequent-pass?
+            (cons "\n"
+                  (interpose "\n"
+                             (->> nodes
 
-            (interpose "\n"
-                       (->> nodes
+                                  ;; filter out destinations that aren't in `nodes`, and differentiate
+                                  ;; between nodes and clusters
+                                  (mapcat
+                                   (fn [node]
+                                     (map vector
+                                          (repeat node)
+                                          (->> node
+                                               adjacent
+                                               (map
+                                                #(cond
+                                                   (node? %) [:node %]
+                                                   (clusters %) [:cluster %]
+                                                   :else nil))
+                                               (remove nil?)))))
 
-                            ;; filter out destinations that aren't in `nodes`, and differentiate
-                            ;; between nodes and clusters
-                            (mapcat
-                             (fn [node]
-                               (map vector
-                                    (repeat node)
-                                    (->> node
-                                         adjacent
-                                         (map
-                                          #(cond
-                                             (node? %) [:node %]
-                                             (clusters %) [:cluster %]
-                                             :else nil))
-                                         (remove nil?)))))
-
-                            ;; format the edges
-                            (map (fn [[a [type b]]]
-                                   (let [descriptor (edge->descriptor a b)
-                                         format #(format-edge
-                                                  (node->id a)
-                                                  (if (= :node type)
-                                                    (node->id b)
-                                                    (cluster->id b))
-                                                  (merge
-                                                   default-edge-options
-                                                   {:directed? directed?}
-                                                   %))]
-                                     (if (vector? descriptor)
-                                       (->> descriptor
-                                            (map format)
-                                            (interpose "\n")
-                                            (apply str))
-                                       (format descriptor))))))))
+                                  ;; format the edges
+                                  (map (fn [[a [type b]]]
+                                         (let [descriptor (edge->descriptor a b)
+                                               format #(format-edge
+                                                        (node->id a)
+                                                        (if (= :node type)
+                                                          (node->id b)
+                                                          (cluster->id b))
+                                                        (merge
+                                                         default-edge-options
+                                                         {:directed? directed?}
+                                                         %))]
+                                           (if (vector? descriptor)
+                                             (->> descriptor
+                                                  (map format)
+                                                  (interpose "\n")
+                                                  (apply str))
+                                             (format descriptor)))))))))
           "\n"
 
           ["}"]))))))
