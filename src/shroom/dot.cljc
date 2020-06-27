@@ -218,7 +218,7 @@
         (apply
          str
          (if subsequent-pass?
-           (str "subgraph " (cluster->id root-cluster))
+           (str "\nsubgraph " (cluster->id root-cluster))
            (if directed?
              "digraph"
              "graph"))
@@ -252,16 +252,16 @@
                 (update-in [:fontname] #(or % "Monospace"))
                 (translate-options)
                 (format-options ", "))
-            "]"))
+            "]\n"))
 
 
          (concat
           
           ;; nodes
-          "\n"
-          (interpose "\n" (if subsequent-pass? (nodesfn root-cluster) (nodesfn nil)))
           
-
+          (interpose "\n" (if subsequent-pass? (nodesfn root-cluster) (nodesfn nil)))
+          "\n"
+          
           ;; ranks
           (->> ranks
                (map
